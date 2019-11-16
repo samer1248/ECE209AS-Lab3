@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[37]:
+# In[1]:
 
 
 import numpy as np
@@ -14,7 +14,7 @@ import copy
 from numpy import cos,sin,pi
 
 
-# In[97]:
+# In[2]:
 
 
 # Robot dimensions
@@ -26,7 +26,7 @@ W = 0.5
 dt = 0.08
 
 
-# In[148]:
+# In[3]:
 
 
 # Plot world
@@ -53,7 +53,7 @@ ax = show_world()
 plot_robot([0.1,0.1,0,0],ax)
 
 
-# In[102]:
+# In[4]:
 
 
 # Calculated difference between angles
@@ -76,7 +76,7 @@ print(get_angle_diff(0,-0.1))
 print(get_angle_diff(0,0))
 
 
-# In[176]:
+# In[12]:
 
 
 def forward_dynamic(state,controls):
@@ -91,12 +91,12 @@ def forward_dynamic(state,controls):
     d = wc*dt
     xd = (x-cx)*cos(d) - (y-cy)*sin(d) + cx
     yd = (x-cx)*sin(d) + (y-cy)*cos(d) + cy
-    thd = th+d
+    thd = (th+d)%(2*pi)
     wd = wc
     return [xd,yd,thd,wd]
 
 
-# In[149]:
+# In[6]:
 
 
 ax = show_world()
@@ -109,7 +109,7 @@ for i in range(3):
     plot_robot(state,ax)
 
 
-# In[173]:
+# In[7]:
 
 
 def state_to_sensor(state):
@@ -156,7 +156,7 @@ def state_to_sensor(state):
     return [f,r,th,w]
 
 
-# In[161]:
+# In[8]:
 
 
 state = [0.3,0.1,np.pi/2,0]
@@ -166,7 +166,7 @@ ax = show_world()
 plot_robot(state,ax)
 
 
-# In[162]:
+# In[9]:
 
 
 def trace_traj(state,traj):
@@ -187,7 +187,7 @@ def plot_state_seq(states):
         plot_robot(state,ax)
 
 
-# In[177]:
+# In[14]:
 
 
 traj = [[0,6]]*500
@@ -197,6 +197,9 @@ plot_state_seq(state_seq)
 plt.figure()
 plt.plot(np.array(obs_seq))
 plt.legend(['f','r','th','w'])
+plt.figure()
+plt.plot(np.array(state_seq))
+plt.legend(['x','y','th','w'])
 
 
 # In[ ]:
@@ -205,7 +208,7 @@ plt.legend(['f','r','th','w'])
 
 
 
-# In[ ]:
+# In[11]:
 
 
 for _ in range(100):
