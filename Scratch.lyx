@@ -1,0 +1,319 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "keywordstyle={\color{blue}\bfseries}"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\series bold
+Control inputs:
+\series default
+ Right and left wheel velocities 
+\begin_inset Formula $\omega_{l}$
+\end_inset
+
+, 
+\begin_inset Formula $\omega_{r}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+State:
+\series default
+ From bottom left corner, angle with positive x-axis 
+\begin_inset Formula $x,y,\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Sensor input:
+\series default
+ Forward distance, right distance, angle from north 
+\begin_inset Formula $f,s,\phi,\dot{\phi}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Robot params: Wheel radius 
+\begin_inset Formula $r_{w}$
+\end_inset
+
+, wheel separation 
+\begin_inset Formula $d_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Environment:
+\series default
+ 
+\begin_inset Formula $W,L$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+System Dynamics
+\end_layout
+
+\begin_layout Standard
+http://www.cs.columbia.edu/~allen/F17/NOTES/icckinematics.pdf
+\end_layout
+
+\begin_layout Standard
+wheel linear speeds
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $v_{l}=\omega_{l}r_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $v_{r}=\omega_{r}r_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Instantaneous center of curvature
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $R_{c}=\frac{d_{w}}{2}\frac{v_{l}+v_{r}}{v_{r}-v_{l}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\omega_{c}=\frac{v_{r}-v_{l}}{d_{w}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $c_{x}=x-R_{c}\sin\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $c_{y}=y+R_{c}\cos\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When moving 
+\begin_inset Formula $\delta t$
+\end_inset
+
+, state changes to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left[\begin{array}{c}
+x'\\
+y'\\
+\theta'
+\end{array}\right]=\left[\begin{array}{ccc}
+\cos(\omega_{c}\delta t) & -\sin(\omega_{c}\delta t) & 0\\
+\sin(\omega_{c}\delta t) & \cos(\omega_{c}\delta t) & 0\\
+0 & 0 & 1
+\end{array}\right]\left[\begin{array}{c}
+x-c_{x}\\
+x-c_{y}\\
+\theta
+\end{array}\right]+\left[\begin{array}{c}
+c_{x}\\
+c_{y}\\
+\omega_{c}\delta t
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left[\begin{array}{c}
+x'\\
+y'\\
+\theta'\\
+\omega'
+\end{array}\right]=\left[\begin{array}{cccc}
+\cos(\omega_{c}\delta t) & -\sin(\omega_{c}\delta t) & 0 & 0\\
+\sin(\omega_{c}\delta t) & \cos(\omega_{c}\delta t) & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]\left[\begin{array}{c}
+x-c_{x}\\
+y-c_{y}\\
+\theta\\
+0
+\end{array}\right]+\left[\begin{array}{c}
+c_{x}\\
+c_{y}\\
+\omega_{c}\delta t\\
+\omega_{c}
+\end{array}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+State to sensor:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\phi=\theta+\pi/2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Let us create an equation of the line of the robot
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $[x_{f},y_{f}]=[x,y]+t_{f}[\cos(\pi/2+\theta),\sin(\pi/2+\theta)]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $[x_{r},y_{r}]=[x,y]+t_{r}[\cos\theta,\sin\theta]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Solve for each for each side of the environment to find the feasible one
+ from which we determine 
+\begin_inset Formula $f$
+\end_inset
+
+ and 
+\begin_inset Formula $r$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\dot{\phi}=\omega$
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
