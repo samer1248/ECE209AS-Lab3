@@ -372,11 +372,11 @@ def apply_kalman(obs_seq,control_seq,init_state,init_cov,state_noise_cov,measure
     c_state = np.array(init_state)
     c_cov = init_cov
     for i in range(len(obs_seq)):
-        print(i)
+#         print(i)
         c_state,c_cov= kalman_step(state_noise_cov,measure_noise_cov,c_state, c_cov ,obs_seq[i],control_seq[i],spreading = spreading,
                                   forward_fun=forward_fun,measurement_fun = measurement_fun)
 #         c_state[2] = c_state[2]#%(2*pi)
-        print(c_state)
+#         print(c_state)
         
         pred_state_seq.append(c_state)
     return pred_state_seq
@@ -398,21 +398,136 @@ plot_state_seq(plt_states)
 # In[19]:
 
 
-m_pred_states = np.array(pred_states)
-m_true_states = np.array(state_seq)
-plt.figure()
-plt.plot(m_pred_states[:,2])
-plt.plot(m_true_states[:,2])
-plt.legend(['pred','true'])
-plt.figure()
-plt.plot(pred_states)
-plt.legend(['x','y','th','w'])
-plt.figure()
-plt.plot(m_true_states)
-plt.legend(['x','y','th','w'])
+def eval_states(pred_states,state_seq,obs_seq):
+    m_pred_states = np.array(pred_states)
+    m_true_states = np.array(state_seq)
+    m_obs_seq = np.array(obs_seq)
+    plt.figure()
+    plt.plot(m_pred_states[:,0])
+    plt.plot(m_true_states[:,0])
+    plt.legend(['pred','true'])
+    plt.figure()
+    plt.plot(m_pred_states[:,1])
+    plt.plot(m_true_states[:,1])
+    plt.legend(['pred','true'])
+    plt.figure()
+    plt.plot(m_pred_states[:,2])
+    plt.plot(m_obs_seq[:,2]-pi/2)
+    plt.plot(m_true_states[:,2])
+    
+    plt.legend(['pred','measured','true'])
+#     plt.figure()
+#     plt.plot(pred_states)
+#     plt.legend(['x','y','th','w'])
+#     plt.figure()
+#     plt.plot(m_true_states)
+#     plt.legend(['x','y','th','w'])
+eval_states(pred_states,state_seq,obs_seq)
 
 
-# In[20]:
+# In[108]:
+
+
+# actuation_noise_std = np.ones((2,))*1e-3
+
+
+def get_state_cov(control_ip,actuation_noise_cov,spreading = 3,forward_fun = forward_dynamic):
+#     print(actuation_noise_cov)
+    sigma_points = calculate_sigma_points(control_ip,actuation_noise_cov,spreading = spreading)
+    control_dim,nsigma = sigma_points.shape
+    control_ip = np.array(control_ip)
+    state_dim = 4
+    sigma_pred = np.zeros((state_dim,nsigma))
+    for i in range(nsigma):
+        sigma_pred[:,i] = forward_fun(np.array([0,0,0,0]),sigma_points[:,i])
+    W = np.zeros((nsigma,))
+    W[0] = spreading/(state_dim+spreading)
+    W[1:] = 1/(2*(state_dim+spreading))
+    mean_pred = np.sum(sigma_pred*W,axis = 1)
+    cov_pred = np.zeros((state_dim,state_dim))
+    for i in range(nsigma):
+        cov_pred += np.outer(sigma_pred[:,i]-mean_pred,sigma_pred[:,i]-mean_pred)*W[i]
+    cov_pred += np.diag(np.ones(state_dim))*1e-10
+    return mean_pred,cov_pred
+actuation_noise_cov = np.diag(actuation_noise_std)
+_,pred_state_cov = get_state_cov(control_seq[0],actuation_noise_cov,spreading = 3)
+print(pred_state_cov)
+np.linalg.cholesky(pred_state_cov)
+
+
+# In[95]:
+
+
+
+
+
+# In[113]:
+
+
+def apply_kalman2(obs_seq,control_seq,init_state,init_cov,actuation_noise_cov,measure_noise_cov,spreading = 3,
+                forward_fun=forward_dynamic,measurement_fun = state_to_sensor):
+    pred_state_seq = []
+    c_state = np.array(init_state)
+    c_cov = init_cov
+    
+    
+    for i in range(len(obs_seq)):
+#         print(i)
+#         print(actuation_noise_cov)
+        _,state_noise_cov = get_state_cov(control_seq[i],actuation_noise_cov,spreading = 3)
+#         print(state_noise_cov)
+#         np.linalg.cholesky(state_noise_cov)
+        c_state,c_cov= kalman_step(state_noise_cov,measure_noise_cov,c_state, c_cov ,obs_seq[i],control_seq[i],spreading = spreading,
+                                  forward_fun=forward_fun,measurement_fun = measurement_fun)
+#         c_state[2] = c_state[2]#%(2*pi)
+#         print(c_state)
+        
+        pred_state_seq.append(c_state)
+    return pred_state_seq
+init_cov = np.zeros((4,4))
+actuation_noise_cov = np.diag(actuation_noise_std)**2
+measure_noise_cov = np.diag(measurement_noise_std)**2
+pred_states = apply_kalman2(obs_seq,control_seq,init_state,init_cov,actuation_noise_cov,measure_noise_cov,spreading = 3)
+
+
+# In[ ]:
+
+
+control_seq = [[6,6]]*100
+init_state = [0.3,0.4,0,0]
+actuation_noise_std = np.ones((2,))*1e-3
+measurement_noise_std = np.ones((4,))*1e-5
+measure_noise_cov = np.diag(measurement_noise_std)
+state_noise_cov = np.diag(measurement_noise_std)
+
+state_seq,obs_seq = trace_traj(init_state,control_seq,actuation_noise_std,measurement_noise_std)
+plot_state_seq(state_seq)
+# plt.figure()
+# plt.plot(np.array(obs_seq))
+# plt.legend(['f','r','th','w'])
+# plt.figure()
+# plt.plot(np.array(state_seq))
+# plt.legend(['x','y','th','w'])
+
+
+init_cov = np.zeros((4,4))
+actuation_noise_cov = np.diag(actuation_noise_std)**2
+state_noise_cov = np.diag(measurement_noise_std)**2
+measure_noise_cov = np.diag(measurement_noise_std)**2
+
+pred_states = apply_kalman(obs_seq,control_seq,init_state,init_cov,state_noise_cov,measure_noise_cov,spreading = 1)
+plot_state_seq(pred_states)
+
+eval_states(pred_states,state_seq,obs_seq)
+
+pred_states2 = apply_kalman2(obs_seq,control_seq,init_state,init_cov,actuation_noise_cov,measure_noise_cov,spreading = 1)
+plot_state_seq(pred_states2)
+
+eval_states(pred_states2,state_seq,obs_seq)
+eval_states(pred_states,pred_states2)
+
+
+# In[ ]:
 
 
 # def fx(x, dt):
@@ -439,7 +554,7 @@ plt.legend(['x','y','th','w'])
 #                 forward_fun=fx,measurement_fun = hx)
 
 
-# In[21]:
+# In[ ]:
 
 
 for _ in range(100):
