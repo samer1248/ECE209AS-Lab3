@@ -225,7 +225,7 @@ y'\\
 0 & 0 & 1
 \end{array}\right]\left[\begin{array}{c}
 x-c_{x}\\
-x-c_{y}\\
+y-c_{y}\\
 \theta
 \end{array}\right]+\left[\begin{array}{c}
 c_{x}\\
@@ -313,6 +313,30 @@ Solve for each for each side of the environment to find the feasible one
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+VL53L0X: Accuracy 3% (p27,https://www.st.com/en/imaging-and-photonics-solutions/vl
+53l0x.html)
+\end_layout
+
+\begin_layout Standard
+mpu-9250: https://www.invensense.com/wp-content/uploads/2015/02/PS-MPU-9250A-01-v1.
+1.pdf
+\end_layout
+
+\begin_layout Standard
+Magnetometer: 14 bit, SNR = 86.04.
+ STD = 4.98e-5
+\end_layout
+
+\begin_layout Standard
+Gyroscope: 16 bit SNR = 98.08dB, STD = 1.25e-5
+\end_layout
+
+\begin_layout Standard
+SNR = 6.02N+1.76 (https://www.analog.com/media/en/training-seminars/tutorials/MT-001.
+pdf)
 \end_layout
 
 \end_body
