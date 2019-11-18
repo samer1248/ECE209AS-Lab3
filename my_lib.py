@@ -13,7 +13,7 @@ wheel_sep = 0.09
 tail_dist = 0.075
 L = 0.75
 W = 0.5
-dt = 0.0001
+dt = 0.001
 
 def show_world():
     plt.rcParams['figure.dpi'] = 150
@@ -273,7 +273,7 @@ def eval_states2(pred_states,state_seq,obs_seq=None):
     plt.plot(np.abs(m_pred_states[:,1] - m_true_states[:,1]))
     plt.plot(np.abs(m_pred_states[:,2]-m_true_states[:,2]))
     plt.legend(['x','y','th'])
-    plt.ylim([0.0,L])
+    # plt.ylim([0.0,0.35])
 
 def get_state_cov(control_ip,actuation_noise_cov,spreading = 3,forward_fun = forward_dynamic):
 #     print(actuation_noise_cov)
