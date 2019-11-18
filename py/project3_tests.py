@@ -136,10 +136,10 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[44]:
+# In[45]:
 
 
-control_seq = [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 +  [[-60,60]]*100 + [[60,60]]*100 
+control_seq = [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 
 init_state = [0.4,0.4,np.pi/2,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
 eval_one_traj(control_seq,init_state,obs_seq);

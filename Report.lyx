@@ -434,7 +434,98 @@ The error of the angle estimator can be calculated from the quantization
 
 \begin_layout Labeling
 \labelwidthstring 00.00.0000
-2(c) We 
+2(c) Since, the system model is non-linear, we need to implement either
+ the Extend Kalman Filter (EKF) or the Unscented Kalman Filter (UKF).
+ We choose to implement the Unscented Kalman Filter (UKF).
+ The UKF gives better peformance than EFK and it does not need the calculation
+ of Jacobians [6].
+ Unlike the EKF, which approximated the system functions using a first order
+ approximation, UKF works by generating a set of points called simga points,
+ it calculates the image of these points and then fits a gaussian distribution
+ to this image.
+ This yields a more accurate estimation of the error mean and variance.
+ This is illustrated as follows [7]
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename ekf_ukf.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The exact steps UKF for additive Gaussian noise are obtained from [7].
+ For a non-linear system with 
+\begin_inset Formula $F$
+\end_inset
+
+ the state dynamics and 
+\begin_inset Formula $H$
+\end_inset
+
+ the output observation, 
+\begin_inset Formula $x_{k}$
+\end_inset
+
+ the state, 
+\begin_inset Formula $u_{k}$
+\end_inset
+
+ the input, 
+\begin_inset Formula $v_{k}$
+\end_inset
+
+and 
+\begin_inset Formula $n_{k}$
+\end_inset
+
+the noise vectors the system is defined as 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename p1.png
+	scale 50
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+The UKF algorithm follows these steps
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename p2.png
+	width 100text%
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where the sigma weights are calculated as follows
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename p3.png
+	scale 50
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Labeling
@@ -501,6 +592,18 @@ nalog.com/media/en/training-seminars/tutorials/MT-001.pdf
 
 [4] Invensense, MPU-9250 Product Specification, https://www.invensense.com/wp-cont
 ent/uploads/2015/02/PS-MPU-9250A-01-v1.1.pdf
+\begin_inset Newline newline
+\end_inset
+
+[6] Eric A.Wan and Rudolph van der Merwe, The Unscented Kalman Filter for
+ Nonlinear Estimation, https://www.seas.harvard.edu/courses/cs281/papers/unscented.p
+df
+\begin_inset Newline newline
+\end_inset
+
+[7] Eric A.Wan and Rudolph van der Merwe, The Unscented Kalman Filter, https://ww
+w.pdx.edu/biomedical-signal-processing-lab/sites/www.pdx.edu.biomedical-signal-proces
+sing-lab/files/ukf.wan_.chapt7_.pdf
 \end_layout
 
 \end_body
