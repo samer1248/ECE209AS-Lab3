@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[17]:
+# In[1]:
 
 
 import numpy as np
@@ -20,7 +20,7 @@ get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# In[25]:
+# In[12]:
 
 
 actuation_noise_std = np.ones((2,))*0.05*60
@@ -31,7 +31,7 @@ measure_noise_cov = np.diag(measurement_noise_std)
 state_noise_cov = np.diag(measurement_noise_std)
 
 
-# In[28]:
+# In[13]:
 
 
 def calc_mse(state_seq,pred_states2):
@@ -56,13 +56,20 @@ def eval_one_traj(control_seq,init_state,obs_seq, seed =0, plot = True):
     pred_states2 = apply_kalman2(obs_seq,control_seq,init_state,init_cov,actuation_noise_cov,measure_noise_cov,spreading = 1)
     
     plt.plot(np.array(obs_seq))
-    plt.legend(['f','r','th','w'])
+    plt.legend(['f (m)','r (m)','th (rad)','w (rad/s)'])
+    plt.xlabel("Step")
+    plt.ylabel("Sensor Values")
+    plt.title("Sensor Values")
     plt.figure()
 
     if plot:
         plot_state_seq(state_seq,10)
+        plt.title("True States")
         plot_state_seq(pred_states2,10)
+        plt.title("Predicted States - Known Initial State")
         eval_states2(pred_states2,state_seq)
+        plt.title("Prediction Error - Known Initial State")
+        plt.xlabel("Step")
         print("MSE" , calc_mse(state_seq,pred_states2))
     return (state_seq,pred_states2)
 
@@ -73,9 +80,9 @@ def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
     actuation_noise_cov = np.diag(actuation_noise_std)**2
     measure_noise_cov = np.diag(measurement_noise_std)**2
     
-    plt.figure()
-    plt.plot(np.array(obs_seq))
-    plt.legend(['f','r','th','w'])
+#     plt.figure()
+#     plt.plot(np.array(obs_seq))
+#     plt.legend(['f','r','th','w'])
     
 
     
@@ -83,20 +90,24 @@ def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
    
     if plot:
         plot_state_seq(state_seq,10)
+        plt.title("True States")
         plot_state_seq(pred_states2,10)
+        plt.title("Predicted States - Unknown Initial State")
         eval_states2(pred_states2,state_seq)
+        plt.title("Prediction Error - Unknown Initial State")
+        plt.xlabel("Step")
         print("MSE" , calc_mse(state_seq,pred_states2))
     return (state_seq,pred_states2)
 
 
-control_seq = [[-60,60]]*800
+control_seq = [[-60,60]]*1000
 init_state = [0.30,0.6,0,0]
-state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 3)
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 5)
 eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[30]:
+# In[14]:
 
 
 control_seq = [[-60,60]]*1000
@@ -106,7 +117,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[31]:
+# In[15]:
 
 
 control_seq = [[60,60]]*400
@@ -116,7 +127,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[22]:
+# In[16]:
 
 
 control_seq = [[60,60]]*200
@@ -126,7 +137,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[32]:
+# In[17]:
 
 
 control_seq = [[60,60]]*200
@@ -136,7 +147,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[45]:
+# In[18]:
 
 
 control_seq = [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 
@@ -146,7 +157,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[24]:
+# In[19]:
 
 
 for _ in range(100):

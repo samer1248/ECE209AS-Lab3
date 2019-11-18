@@ -272,7 +272,7 @@ def eval_states2(pred_states,state_seq,obs_seq=None):
     plt.plot(np.abs(m_pred_states[:,0] - m_true_states[:,0]))
     plt.plot(np.abs(m_pred_states[:,1] - m_true_states[:,1]))
     plt.plot(np.abs(m_pred_states[:,2]-m_true_states[:,2]))
-    plt.legend(['x','y','th'])
+    plt.legend(['x (m)','y (m)','th (rad)'])
     # plt.ylim([0.0,0.35])
 
 def get_state_cov(control_ip,actuation_noise_cov,spreading = 3,forward_fun = forward_dynamic):

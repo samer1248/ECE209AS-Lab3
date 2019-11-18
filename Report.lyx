@@ -460,6 +460,8 @@ The error of the angle estimator can be calculated from the quantization
 \end_inset
 
 The exact steps UKF for additive Gaussian noise are obtained from [7].
+ An additional step of unscented transform was performed to estimate the
+ system noise from the input noise.
  For a non-linear system with 
 \begin_inset Formula $F$
 \end_inset
@@ -526,6 +528,14 @@ where the sigma weights are calculated as follows
 \end_inset
 
 
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
 \end_layout
 
 \begin_layout Labeling
@@ -542,8 +552,118 @@ where the sigma weights are calculated as follows
 
 \begin_layout Labeling
 \labelwidthstring 00.00.0000
-3(a) The
+3(a) We chose the following trajectories to evaluate our UKF.
 \begin_inset Newline newline
+\end_inset
+
+(1) Rotating in place: Using a control sequence [-60,60] for 1000 steps
+ starting from [0.30,0.6,0,0]
+\begin_inset Newline newline
+\end_inset
+
+(2) Heading south: Heading forward [60,60] for 400 steps while starting
+ from [0.4,0.4,pi,0]
+\begin_inset Newline newline
+\end_inset
+
+(3) Heading East: Heading forward [60,60] for 400 steps while starting from
+ [0.05,0.4,-pi/2,0]
+\begin_inset Newline newline
+\end_inset
+
+(4) Complex trajectory: Robot heads east for 100 steps, rotates in place
+ for 200 steps, heads forward for 100 steps, rotates for another 200 steps,
+ then heads forward for 100 steps
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+3(b) For each trajectory, we explain the traces
+\begin_inset Newline newline
+\end_inset
+
+(1)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_2_4.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_3_2.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+(2)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_4_5.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_4_3.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+(3)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_5_4.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_5_2.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+(4)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_7_5.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_7_3.png
+	scale 60
+
 \end_inset
 
 
@@ -551,12 +671,163 @@ where the sigma weights are calculated as follows
 
 \begin_layout Labeling
 \labelwidthstring 00.00.0000
-3(b) Collision
-\end_layout
+3(c) (1)
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout Labeling
-\labelwidthstring 00.00.0000
-3(c) The 
+
+\begin_inset Graphics
+	filename project3_tests/output_3_5.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_3_6.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_3_8.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_3_9.png
+	scale 60
+
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+(2)
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename project3_tests/output_4_6.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_4_7.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_4_9.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_4_10.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+(3) 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename project3_tests/output_5_5.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_5_6.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_5_8.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_5_9.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+(4) 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename project3_tests/output_7_6.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_7_7.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_7_9.png
+	scale 60
+
+\end_inset
+
+
+\begin_inset Graphics
+	filename project3_tests/output_7_10.png
+	scale 60
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Labeling
