@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[17]:
 
 
 import numpy as np
@@ -20,18 +20,18 @@ get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# In[2]:
+# In[25]:
 
 
 actuation_noise_std = np.ones((2,))*0.05*60
 
-measurement_noise_std = np.array([0.003,0.003,4.98e-5,1.25e-5]) #np.ones((4,))*1e-5
+measurement_noise_std = np.array([0.03*0.4,0.03*0.4,4.98e-5,1.25e-5]) #np.ones((4,))*1e-5
 
 measure_noise_cov = np.diag(measurement_noise_std)
 state_noise_cov = np.diag(measurement_noise_std)
 
 
-# In[3]:
+# In[28]:
 
 
 def calc_mse(state_seq,pred_states2):
@@ -40,14 +40,14 @@ def calc_mse(state_seq,pred_states2):
 #     print(m_pred_states2[:,0:3].shape)
     mse = np.sqrt(np.mean( (m_pred_states2[:,0:3] - m_state_seq[:,0:3,])**2,axis = 0))
     return mse
-    
 
-def eval_one_traj(control_seq,init_state, seed =0, plot = True):
+def generate_measurement(init_state,control_seq,seed = 0):
     np.random.seed(seed)
     state_seq,obs_seq = trace_traj(init_state,control_seq,actuation_noise_std,measurement_noise_std)
+    return state_seq,obs_seq
+
+def eval_one_traj(control_seq,init_state,obs_seq, seed =0, plot = True):
     
-
-
     init_cov = np.zeros((4,4))
     actuation_noise_cov = np.diag(actuation_noise_std)**2
     measure_noise_cov = np.diag(measurement_noise_std)**2
@@ -67,12 +67,8 @@ def eval_one_traj(control_seq,init_state, seed =0, plot = True):
     return (state_seq,pred_states2)
 
 
-def eval_one_traj_unknown(control_seq,init_state, seed =0, plot = True):
-    np.random.seed(seed)
-    state_seq,obs_seq = trace_traj(init_state,control_seq,actuation_noise_std,measurement_noise_std)
+def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
     
-
-
     init_cov = np.diag(np.ones((4,)))
     actuation_noise_cov = np.diag(actuation_noise_std)**2
     measure_noise_cov = np.diag(measurement_noise_std)**2
@@ -93,50 +89,64 @@ def eval_one_traj_unknown(control_seq,init_state, seed =0, plot = True):
     return (state_seq,pred_states2)
 
 
-control_seq = [[-60,60]]*500
-init_state = [0.30,0.7,0,0]
-eval_one_traj(control_seq,init_state,seed = 1);
+control_seq = [[-60,60]]*800
+init_state = [0.30,0.6,0,0]
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 3)
+eval_one_traj(control_seq,init_state,obs_seq);
+eval_one_traj_unknown(control_seq,obs_seq);
+
+
+# In[30]:
+
+
 control_seq = [[-60,60]]*1000
-eval_one_traj_unknown(control_seq,init_state, seed =1);
+init_state = [0.30,0.6,0,0]
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 6)
+eval_one_traj(control_seq,init_state,obs_seq);
+eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[4]:
+# In[31]:
 
 
-control_seq = [[-60,60]]*500
-init_state = [0.30,0.7,0,0]
-eval_one_traj(control_seq,init_state,seed = 1);
-control_seq = [[-60,60]]*1000
-eval_one_traj_unknown(control_seq,init_state, seed =1);
-
-
-# In[5]:
-
-
-control_seq = [[60,60]]*200
+control_seq = [[60,60]]*400
 init_state = [0.4,0.4,pi,0]
-eval_one_traj(control_seq,init_state,seed = 0);
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
+eval_one_traj(control_seq,init_state,obs_seq);
+eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[9]:
+# In[22]:
 
 
 control_seq = [[60,60]]*200
-init_state = [0.45,0.4,pi/2,0]
-eval_one_traj(control_seq,init_state,seed = 0);
-eval_one_traj_unknown(control_seq,init_state,seed = 0);
+init_state = [0.05,0.4,-pi/2,0]
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
+eval_one_traj(control_seq,init_state,obs_seq);
+eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[10]:
+# In[32]:
 
 
-control_seq = [[0,60]]*200
+control_seq = [[60,60]]*200
 init_state = [0.4,0.4,np.pi/2,0]
-eval_one_traj(control_seq,init_state,seed = 1);
-eval_one_traj_unknown(control_seq,init_state,seed = 1);
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
+eval_one_traj(control_seq,init_state,obs_seq);
+eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[8]:
+# In[44]:
+
+
+control_seq = [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 +  [[-60,60]]*100 + [[60,60]]*100 
+init_state = [0.4,0.4,np.pi/2,0]
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
+eval_one_traj(control_seq,init_state,obs_seq);
+eval_one_traj_unknown(control_seq,obs_seq);
+
+
+# In[24]:
 
 
 for _ in range(100):

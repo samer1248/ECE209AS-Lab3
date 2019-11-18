@@ -1,0 +1,507 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage[ruled,vlined]{algorithm2e}
+\end_preamble
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 1in
+\topmargin 1in
+\rightmargin 1in
+\bottommargin 1in
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\listings_params "keywordstyle={\color{blue}\bfseries}"
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+ECE2019AS (Fall 2019) - Lab 3
+\end_layout
+
+\begin_layout Author
+Samer Hanna 305033107
+\end_layout
+
+\begin_layout Date
+Nov.
+ 18, 2019
+\end_layout
+
+\begin_layout Section*
+0 Preliminaries
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+0(a) Public Repository: https://github.com/samer1248/ECE209AS-Lab3
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+0(b) No one.
+ The code and report where entirely made by me.
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+0(c) Samer Hanna 100%
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+2 Trajectory Planning
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+2(a) 
+\series bold
+Control Inputs:
+\series default
+ Right and left wheel velocities 
+\begin_inset Formula $\omega_{l}$
+\end_inset
+
+, 
+\begin_inset Formula $\omega_{r}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+State:
+\series default
+ x coordinate, y coordintate, angle with positive x-axis, rotational speed
+ 
+\begin_inset Formula $x,y,\theta,\omega$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Sensor input:
+\series default
+ Forward distance, right distance, angle from north 
+\begin_inset Formula $f,s,\phi,\dot{\phi}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Robot params:
+\series default
+ Wheel radius 
+\begin_inset Formula $r_{w}=0.025m$
+\end_inset
+
+, wheel separation 
+\begin_inset Formula $d_{w}=0.09m$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+System Dynamics: 
+\series default
+Differential drive kinematics were obtained from [1]
+\series bold
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series default
+wheel linear speeds
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset Formula $v_{l}=\omega_{l}r_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $v_{r}=\omega_{r}r_{w}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Instantaneous center of curvature
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $R_{c}=\frac{d_{w}}{2}\frac{v_{l}+v_{r}}{v_{r}-v_{l}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\omega_{c}=\frac{v_{r}-v_{l}}{d_{w}}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $c_{x}=x-R_{c}\sin\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $c_{y}=y+R_{c}\cos\theta$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+When moving 
+\begin_inset Formula $\delta t$
+\end_inset
+
+, state changes to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\left[\begin{array}{c}
+x'\\
+y'\\
+\theta'\\
+\omega'
+\end{array}\right]=\left[\begin{array}{cccc}
+\cos(\omega_{c}\delta t) & -\sin(\omega_{c}\delta t) & 0 & 0\\
+\sin(\omega_{c}\delta t) & \cos(\omega_{c}\delta t) & 0 & 0\\
+0 & 0 & 1 & 0\\
+0 & 0 & 0 & 1
+\end{array}\right]\left[\begin{array}{c}
+x-c_{x}\\
+y-c_{y}\\
+\theta\\
+0
+\end{array}\right]+\left[\begin{array}{c}
+c_{x}\\
+c_{y}\\
+\omega_{c}\delta t\\
+\omega_{c}
+\end{array}\right]$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Sensor Readings:
+\begin_inset Newline newline
+\end_inset
+
+
+\series default
+To calculate the readings from the laser range estimators, we need to determine
+ which side of the square environment is in front and to the right of the
+ robot.
+ To do that we create two straight lines as follows
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $[x_{f},y_{f}]=[x,y]+t_{f}[\cos(\pi/2+\theta),\sin(\pi/2+\theta)]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $[x_{r},y_{r}]=[x,y]+t_{r}[\cos\theta,\sin\theta]$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+where 
+\begin_inset Formula $x_{f},y_{f}$
+\end_inset
+
+are the x and y of points on the line in front of the robot, 
+\begin_inset Formula $t_{f}$
+\end_inset
+
+ is a parameter of the line equation representing the distance from the
+ point 
+\begin_inset Formula $x,y$
+\end_inset
+
+ using angle 
+\begin_inset Formula $\theta+\pi/2$
+\end_inset
+
+.
+ Similar notation is used for the line to the right of the robot.Then we
+ intersect these lines with of the four the walls and determine which intersecti
+on point is valid.
+ Meaning that the intersection point for the 
+\begin_inset Formula $x$
+\end_inset
+
+ of the north and south walls is within 
+\begin_inset Formula $[0,W]$
+\end_inset
+
+ and the east and west walls is within 
+\begin_inset Formula $[0,L]$
+\end_inset
+
+.
+ After finding the interesection point, we use the obtained distance as
+ the front 
+\begin_inset Formula $f$
+\end_inset
+
+ and right 
+\begin_inset Formula $r$
+\end_inset
+
+ reading respectively.
+ 
+\begin_inset Newline newline
+\end_inset
+
+The remaining measurements are straightforward to calculate.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\phi=\theta+\pi/2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\dot{\phi}=\omega_{c}$
+\end_inset
+
+ 
+\begin_inset Newline newline
+\end_inset
+
+
+\series bold
+Time Step: 
+\series default
+The time step used was equal to 0.001 second
+\end_layout
+
+\end_deeper
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+2(b) The noise on the input can be modeled as follows
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\omega_{l}^{n}=\omega_{l}+n_{\omega}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Formula $\omega_{r}^{n}=\omega_{r}+n_{\omega}$
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+According to the problem statement 
+\begin_inset Formula $n_{\omega}$
+\end_inset
+
+ is Gaussian with zero mean and standard deviation of 5% of the maximum
+ speed, which is equal to 3 rpm.
+\begin_inset Newline newline
+\end_inset
+
+The error of the VL53L0X range estimator is 3% of the distance, which is
+ equal to about 0.4 on the average.
+\begin_inset Newline newline
+\end_inset
+
+The error of the angle estimator can be calculated from the quantization
+ noise using the following relation [3]: SNR = 6.02N+1.76.
+ The gyroscope has 14 bits giving a noise standard deviation of 4.98e-5 and
+ the angular velocity a noise standard deviation of 1.25e-5
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+2(c) We 
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section*
+3 Evaluation 
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+3(a) The
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+3(b) Collision
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+3(c) The 
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+3(d) The
+\end_layout
+
+\begin_layout Labeling
+\labelwidthstring 00.00.0000
+3(e) The
+\end_layout
+
+\begin_layout Section*
+4 References
+\end_layout
+
+\begin_layout Standard
+[1] Peter K.
+ Allen, CS W4733 Notes - Differential Drive Robots, http://www.cs.columbia.edu/~all
+en/F17/NOTES/icckinematics.pdf
+\begin_inset Newline newline
+\end_inset
+
+[2] ST electronics, Vl53l0X Datasheet, https://www.st.com/en/imaging-and-photonics
+-solutions/vl53l0x.html
+\begin_inset Newline newline
+\end_inset
+
+[3] Analog Devices, Taking the Mystery out of the Infamous Formula, https://www.a
+nalog.com/media/en/training-seminars/tutorials/MT-001.pdf
+\begin_inset Newline newline
+\end_inset
+
+[4] Invensense, MPU-9250 Product Specification, https://www.invensense.com/wp-cont
+ent/uploads/2015/02/PS-MPU-9250A-01-v1.1.pdf
+\end_layout
+
+\end_body
+\end_document
