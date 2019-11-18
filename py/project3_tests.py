@@ -118,20 +118,22 @@ init_state = [0.4,0.4,pi,0]
 eval_one_traj(control_seq,init_state,seed = 0);
 
 
-# In[6]:
+# In[9]:
 
 
 control_seq = [[60,60]]*200
 init_state = [0.45,0.4,pi/2,0]
 eval_one_traj(control_seq,init_state,seed = 0);
+eval_one_traj_unknown(control_seq,init_state,seed = 0);
 
 
-# In[7]:
+# In[10]:
 
 
 control_seq = [[0,60]]*200
 init_state = [0.4,0.4,np.pi/2,0]
 eval_one_traj(control_seq,init_state,seed = 1);
+eval_one_traj_unknown(control_seq,init_state,seed = 1);
 
 
 # In[8]:
