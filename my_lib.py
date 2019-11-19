@@ -11,10 +11,12 @@ from numpy import cos,sin,pi
 wheel_radius = 0.025
 wheel_sep = 0.09
 tail_dist = 0.075
+# Environment parameters
 L = 0.75
 W = 0.5
 dt = 0.001
 
+# Plat the world
 def show_world():
     plt.rcParams['figure.dpi'] = 150
     fig = plt.figure()
@@ -28,12 +30,16 @@ def show_world():
     
     return ax
         
-# Plot robot
+# Plot robot at state
 def plot_robot(state,ax):      
     l = 0.025
     ax.arrow(state[0], state[1], l*np.cos(state[2]+pi/2), l*np.sin(state[2]+pi/2),width = 0.000001, head_width=0.01,head_length = 0.005)
 
+# Apply control when robot is at state
+# return new state
 def forward_dynamic(state,controls):
+    # Dynamics model according to
+    # http://www.cs.columbia.edu/~allen/F17/NOTES/icckinematics.pdf
     wl,wr = controls
     x,y,th,w = state
     vr = wr*wheel_radius
@@ -57,14 +63,19 @@ def forward_dynamic(state,controls):
     return [xd,yd,thd,wd]
 
 
+# Get state from sensor reading
 def state_to_sensor(state,noise_std = None):
+    # Get distance for a given y/y
     get_dist_x = lambda x :  [(x - state[0])/ np.cos(state[2]) , (x - state[0])/ np.cos(state[2]+pi/2)]
     get_dist_y = lambda x :  [(x - state[1])/ np.sin(state[2]), (x - state[1])/ np.sin(state[2]+pi/2)]
+    # Substitue in line equation for a given d
     get_line_x = lambda d :  [state[0] + d[0] * np.cos(state[2]) , state[0] + d[1] * np.cos(state[2]+pi/2)]
     get_line_y = lambda d :  [state[1] + d[0] * np.sin(state[2]),  state[1] + d[1] * np.sin(state[2]+pi/2)]
 
 
-    
+    # Calculate distance on the line for each of the bounaries
+    # Calculate equivalent x,y
+    # Solve it twice for front and right lines (one for each sensor)
     rN,fN = get_dist_y(L)
     xrN,xfN = get_line_x([rN,fN])
  
@@ -84,16 +95,20 @@ def state_to_sensor(state,noise_std = None):
         return y<=L and y>=0
     
     
+    # Check for boundary that intersects
     ra =  [rN,rS,rW,rE]
     fa = [fN,fS,fW,fE]
     
     rb = [check_x(xrN) and rN>=0,check_x(xrS) and rS>=0,check_y(yrW) and rW>=0,check_y(yrE) and rE>=0]
     fb = [check_x(xfN) and fN>=0,check_x(xfS) and fS>=0,check_y(yfW) and fW>=0,check_y(yfE) and fE>=0]
+    
+    # If more one boundary intersect raise error
     if sum(rb)!=1:
 #         print(ra,rb)
         1/0
         r = -1
     else:
+        # Return chosen reading and add noise 
         r = ra[rb.index(True)]
         if noise_std is not None:
             r = r + r*noise_std[1]* np.random.randn()
@@ -102,27 +117,33 @@ def state_to_sensor(state,noise_std = None):
         1/0
         f = -1
     else:
+        # Return chosen reading and add noise 
         f = fa[fb.index(True)]
         if noise_std is not None:
             f = f + f*noise_std[0]* np.random.randn()
     
+    # Calculate theta and omega
     th = (state[2]+pi/2)#%(2*pi)
     w = state[3]
+    # Add noise to readings
     if noise_std is not None:
          th = (th + noise_std[2]* np.random.randn())#%(2*pi)
          w = w + noise_std[3]* np.random.randn()
     return [f,r,th,w]
 
-
+# Apply trajectory and return true states, and observatiosn
 def trace_traj(state,traj,actuation_noise_std = None,measurement_noise = None):
     state_seq = []
     obs_seq = []
     traj = copy.deepcopy(traj)
     for c in traj:
+        # Add actuation noise
         if actuation_noise_std is not None:
             c[0] += actuation_noise_std[0]*np.random.randn()
             c[1] += actuation_noise_std[1]*np.random.randn()
+        # Get observations
         obs = state_to_sensor(state,measurement_noise)
+        # Calculate next steps for input
         state = forward_dynamic(state,c)
         
 #         print(state)
@@ -130,6 +151,7 @@ def trace_traj(state,traj,actuation_noise_std = None,measurement_noise = None):
         state_seq.append(state)
     return (state_seq,obs_seq)
 
+# Plot a sequence of states
 def plot_state_seq(states,stp = 1):
     ax = show_world()
     s = 0
@@ -139,7 +161,7 @@ def plot_state_seq(states,stp = 1):
             plot_robot(state,ax)
         s+=1
 
-
+# Calculate UKF sigma points
 def calculate_sigma_points(state_mean,actuation_noise_cov,spreading = 3):
     state_mean = np.array(state_mean )
     sqrt_activ_noise_cov = np.linalg.cholesky(actuation_noise_cov)
@@ -150,7 +172,7 @@ def calculate_sigma_points(state_mean,actuation_noise_cov,spreading = 3):
     X[:,state_dim+1:] = state_mean[:,None]  - np.sqrt(state_dim+spreading)*sqrt_activ_noise_cov
     return X
 
-
+# Apply UKF prediction step
 def predict(sigma_points,control_input,actuation_noise_cov,spreading = 3,forward_fun=forward_dynamic): 
     sigma_pred = np.zeros_like(sigma_points)
     state_dim,nsigma = sigma_points.shape
@@ -169,7 +191,7 @@ def predict(sigma_points,control_input,actuation_noise_cov,spreading = 3,forward
     cov_pred += actuation_noise_cov
     return mean_pred,cov_pred,sigma_pred
 
-
+# Apply UKF update step
 def update(sigma_points,measurement_noise_cov,spreading = 3,measurement_fun = state_to_sensor): 
     state_dim,nsigma = sigma_points.shape
     measurement_dim = 4
@@ -187,7 +209,7 @@ def update(sigma_points,measurement_noise_cov,spreading = 3,measurement_fun = st
     cov_pred+=measurement_noise_cov
     return mean_pred,cov_pred,sigma_pred
 
-
+# Calculate UKF kalman gain
 def calc_kalman_gain(state_pred,state_mean,measure_pred,measure_mean,measure_cov,spreading = 3):
     state_dim,nsigma = state_pred.shape
     cov_pred = np.zeros((state_pred.shape[0],measure_pred.shape[0]))
@@ -198,12 +220,14 @@ def calc_kalman_gain(state_pred,state_mean,measure_pred,measure_mean,measure_cov
         cov_pred += np.outer(state_pred[:,i]-state_mean,measure_pred[:,i]-measure_mean)*W[i]
     return cov_pred@np.linalg.inv(measure_cov)
 
+# Update UKF state
 def kalman_update(pred_state,state_cov,pred_measure,measure_cov,  actual_measure ,kalman_gain):
 #     print(locals())
     state = pred_state + kalman_gain@(actual_measure - pred_measure)
     cov = state_cov - kalman_gain@measure_cov@kalman_gain.T
     return (state,cov)
 
+# Apply an iteration of UKF
 def kalman_step(state_noise_cov,measure_noise_cov,init_state, init_cov ,actual_measure, control_ip,spreading = 3,
                forward_fun=forward_dynamic,measurement_fun = state_to_sensor ):
 #     print(locals())
@@ -216,6 +240,7 @@ def kalman_step(state_noise_cov,measure_noise_cov,init_state, init_cov ,actual_m
     op_state,op_cov=kalman_update(c_state_mean,c_state_cov,c_measure_mean,c_measure_cov,actual_measure ,kalman_gain)
     return op_state,op_cov
 
+# Apply UKF on a set of observations
 def apply_kalman(obs_seq,control_seq,init_state,init_cov,state_noise_cov,measure_noise_cov,spreading = 3,
                 forward_fun=forward_dynamic,measurement_fun = state_to_sensor):
     pred_state_seq = []
@@ -232,6 +257,7 @@ def apply_kalman(obs_seq,control_seq,init_state,init_cov,state_noise_cov,measure
     return pred_state_seq
 
 
+# Plot states
 def eval_states(pred_states,state_seq,obs_seq=None):
     m_pred_states = np.array(pred_states)
     m_true_states = np.array(state_seq)
@@ -263,7 +289,7 @@ def eval_states(pred_states,state_seq,obs_seq=None):
 #     plt.figure()
 #     plt.plot(m_true_states)
 
-
+#  Plot states errors
 def eval_states2(pred_states,state_seq,obs_seq=None):
     m_pred_states = np.array(pred_states)
     m_true_states = np.array(state_seq)
@@ -276,6 +302,7 @@ def eval_states2(pred_states,state_seq,obs_seq=None):
     plt.legend(['x (cm)','y (cm)','th (rad)'])
     # plt.ylim([0.0,0.35])
 
+# Get state covariance from actuation error. (Not working correclty)
 def get_state_cov(state,control_ip,actuation_noise_cov,spreading = 3,forward_fun = forward_dynamic):
 #     print(actuation_noise_cov)
     sigma_points = calculate_sigma_points(control_ip,actuation_noise_cov,spreading = spreading)
@@ -295,6 +322,7 @@ def get_state_cov(state,control_ip,actuation_noise_cov,spreading = 3,forward_fun
     cov_pred += np.diag(np.ones(state_dim))*1e-20
     return mean_pred,cov_pred
 
+# Apply UKF for set of observations and control inputs
 def apply_kalman2(obs_seq,control_seq,init_state,init_cov,actuation_noise_cov,measure_noise_cov,spreading = 3,
                 forward_fun=forward_dynamic,measurement_fun = state_to_sensor):
     pred_state_seq = []

@@ -23,6 +23,7 @@ get_ipython().run_line_magic('autoreload', '2')
 # In[20]:
 
 
+# Noise parameters
 actuation_noise_std = np.ones((2,))*0.05*60
 
 measurement_noise_std = np.array([0.01,0.01,4.98e-5,1.25e-5]) #np.ones((4,))*1e-5
@@ -34,6 +35,7 @@ state_noise_cov = np.diag(measurement_noise_std)
 # In[21]:
 
 
+# Calculate MSE
 def calc_mse(state_seq,pred_states2):
     m_state_seq = np.array(state_seq)
     m_pred_states2 =np.array(pred_states2)
@@ -41,11 +43,13 @@ def calc_mse(state_seq,pred_states2):
     mse = np.sqrt(np.mean( (m_pred_states2[:,0:3] - m_state_seq[:,0:3,])**2,axis = 0))
     return mse
 
+# Generate measurements and states for a given control inputs
 def generate_measurement(init_state,control_seq,seed = 0):
     np.random.seed(seed)
     state_seq,obs_seq = trace_traj(init_state,control_seq,actuation_noise_std,measurement_noise_std)
     return state_seq,obs_seq
 
+# Evaluate a trajectory knowing start state
 def eval_one_traj(control_seq,init_state,obs_seq, seed =0, plot = True):
     
     init_cov = np.zeros((4,4))
@@ -73,6 +77,7 @@ def eval_one_traj(control_seq,init_state,obs_seq, seed =0, plot = True):
     return (state_seq,pred_states2)
 
 
+# Evaluate a trjactory given an unknown start state
 def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
     
     init_cov = np.diag(np.ones((4,)))*1
@@ -99,6 +104,7 @@ def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
     return (state_seq,pred_states2)
 
 
+# Rotating in place example
 control_seq = [[-60,60]]*1000
 init_state = [0.30,0.6,0,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 5)
@@ -110,6 +116,7 @@ eval_one_traj_unknown(control_seq,obs_seq);
 # In[22]:
 
 
+# Rotating in place example
 control_seq = [[-60,60]]*1000
 init_state = [0.30,0.6,0,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 6)
@@ -120,6 +127,7 @@ eval_one_traj_unknown(control_seq,obs_seq);
 # In[32]:
 
 
+# Head south
 control_seq = [[60,60]]*150
 init_state = [0.4,0.4,pi,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 3)
@@ -130,6 +138,7 @@ eval_one_traj_unknown(control_seq,obs_seq);
 # In[33]:
 
 
+# Head east
 control_seq = [[60,60]]*150
 init_state = [0.05,0.4,-pi/2,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 1)
@@ -140,6 +149,7 @@ eval_one_traj_unknown(control_seq,obs_seq);
 # In[25]:
 
 
+# Head west
 control_seq = [[60,60]]*500
 init_state = [0.4,0.4,np.pi/2,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
@@ -150,6 +160,7 @@ eval_one_traj_unknown(control_seq,obs_seq);
 # In[26]:
 
 
+# Make complex path
 control_seq = [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 
 init_state = [0.4,0.4,np.pi/2,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
