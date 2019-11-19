@@ -421,8 +421,7 @@ According to the problem statement
 \begin_inset Newline newline
 \end_inset
 
-The error of the VL53L0X range estimator is 3% of the distance, which is
- equal to about 0.4 on the average.
+The error of the VL53L0X range estimator is 3% of the distance measured.
 \begin_inset Newline newline
 \end_inset
 
@@ -582,7 +581,17 @@ where the sigma weights are calculated as follows
 \begin_inset Newline newline
 \end_inset
 
-(1)
+(1) Theta is increasing du to the rotation.
+ 
+\begin_inset Formula $f$
+\end_inset
+
+ and 
+\begin_inset Formula $r$
+\end_inset
+
+ are changing in a circular manner due to the change in the walls used for
+ measurements..
 \begin_inset Newline newline
 \end_inset
 

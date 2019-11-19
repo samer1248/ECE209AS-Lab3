@@ -20,18 +20,18 @@ get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# In[12]:
+# In[2]:
 
 
 actuation_noise_std = np.ones((2,))*0.05*60
 
-measurement_noise_std = np.array([0.03*0.4,0.03*0.4,4.98e-5,1.25e-5]) #np.ones((4,))*1e-5
+measurement_noise_std = np.array([0.01,0.01,4.98e-5,1.25e-5]) #np.ones((4,))*1e-5
 
 measure_noise_cov = np.diag(measurement_noise_std)
 state_noise_cov = np.diag(measurement_noise_std)
 
 
-# In[13]:
+# In[3]:
 
 
 def calc_mse(state_seq,pred_states2):
@@ -52,11 +52,10 @@ def eval_one_traj(control_seq,init_state,obs_seq, seed =0, plot = True):
     actuation_noise_cov = np.diag(actuation_noise_std)**2
     measure_noise_cov = np.diag(measurement_noise_std)**2
 
-
-    pred_states2 = apply_kalman2(obs_seq,control_seq,init_state,init_cov,actuation_noise_cov,measure_noise_cov,spreading = 1)
+    pred_states2 = apply_kalman2(obs_seq,control_seq,init_state,init_cov,actuation_noise_cov,measure_noise_cov,spreading = 3)
     
-    plt.plot(np.array(obs_seq))
-    plt.legend(['f (m)','r (m)','th (rad)','w (rad/s)'])
+    plt.plot(np.array(obs_seq*np.array([[100,100,1,1]])))
+    plt.legend(['f (cm)','r (cm)','th (rad)','w (rad/s)'])
     plt.xlabel("Step")
     plt.ylabel("Sensor Values")
     plt.title("Sensor Values")
@@ -76,7 +75,7 @@ def eval_one_traj(control_seq,init_state,obs_seq, seed =0, plot = True):
 
 def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
     
-    init_cov = np.diag(np.ones((4,)))
+    init_cov = np.diag(np.ones((4,)))*1
     actuation_noise_cov = np.diag(actuation_noise_std)**2
     measure_noise_cov = np.diag(measurement_noise_std)**2
     
@@ -86,7 +85,7 @@ def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
     
 
     
-    pred_states2 = apply_kalman2(obs_seq,control_seq,[W/2,L/2,0,0],init_cov,actuation_noise_cov,measure_noise_cov,spreading = 0.1)
+    pred_states2 = apply_kalman2(obs_seq,control_seq,[W/2,L/2,0,0],init_cov,actuation_noise_cov,measure_noise_cov,spreading = 3)
    
     if plot:
         plot_state_seq(state_seq,10)
@@ -103,11 +102,12 @@ def eval_one_traj_unknown(control_seq,obs_seq, plot = True):
 control_seq = [[-60,60]]*1000
 init_state = [0.30,0.6,0,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 5)
+
 eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[14]:
+# In[4]:
 
 
 control_seq = [[-60,60]]*1000
@@ -117,22 +117,12 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[15]:
+# In[5]:
 
 
-control_seq = [[60,60]]*400
+control_seq = [[60,60]]*80
 init_state = [0.4,0.4,pi,0]
-state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
-eval_one_traj(control_seq,init_state,obs_seq);
-eval_one_traj_unknown(control_seq,obs_seq);
-
-
-# In[16]:
-
-
-control_seq = [[60,60]]*200
-init_state = [0.05,0.4,-pi/2,0]
-state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 3)
 eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
@@ -140,14 +130,24 @@ eval_one_traj_unknown(control_seq,obs_seq);
 # In[17]:
 
 
-control_seq = [[60,60]]*200
+control_seq = [[6,6]]*400
+init_state = [0.05,0.4,-pi/2,0]
+state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 1)
+eval_one_traj(control_seq,init_state,obs_seq);
+eval_one_traj_unknown(control_seq,obs_seq);
+
+
+# In[7]:
+
+
+control_seq = [[60,60]]*500
 init_state = [0.4,0.4,np.pi/2,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 2)
 eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[18]:
+# In[8]:
 
 
 control_seq = [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 
@@ -157,7 +157,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[19]:
+# In[9]:
 
 
 for _ in range(100):
