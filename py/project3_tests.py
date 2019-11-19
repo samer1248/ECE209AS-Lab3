@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[19]:
 
 
 import numpy as np
@@ -20,7 +20,7 @@ get_ipython().run_line_magic('load_ext', 'autoreload')
 get_ipython().run_line_magic('autoreload', '2')
 
 
-# In[2]:
+# In[20]:
 
 
 actuation_noise_std = np.ones((2,))*0.05*60
@@ -31,7 +31,7 @@ measure_noise_cov = np.diag(measurement_noise_std)
 state_noise_cov = np.diag(measurement_noise_std)
 
 
-# In[3]:
+# In[21]:
 
 
 def calc_mse(state_seq,pred_states2):
@@ -107,7 +107,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[4]:
+# In[22]:
 
 
 control_seq = [[-60,60]]*1000
@@ -117,27 +117,27 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[5]:
+# In[32]:
 
 
-control_seq = [[60,60]]*80
+control_seq = [[60,60]]*150
 init_state = [0.4,0.4,pi,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 3)
 eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[17]:
+# In[33]:
 
 
-control_seq = [[6,6]]*400
+control_seq = [[60,60]]*150
 init_state = [0.05,0.4,-pi/2,0]
 state_seq,obs_seq = generate_measurement(init_state,control_seq,seed = 1)
 eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[7]:
+# In[25]:
 
 
 control_seq = [[60,60]]*500
@@ -147,7 +147,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[8]:
+# In[26]:
 
 
 control_seq = [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 +  [[-60,60]]*200 + [[60,60]]*100 
@@ -157,7 +157,7 @@ eval_one_traj(control_seq,init_state,obs_seq);
 eval_one_traj_unknown(control_seq,obs_seq);
 
 
-# In[9]:
+# In[27]:
 
 
 for _ in range(100):
